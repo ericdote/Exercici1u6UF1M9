@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica1u6;
 
 /**
@@ -11,11 +6,13 @@ package practica1u6;
  */
 public class Practica1u6 {
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String[] args) {
-        // TODO code application logic here
+        String rutaKeyStoreDesti = "C:\\Users\\Eric\\Desktop\\DAM\\M9\\UF1\\Practica1u6\\src\\SSL\\desti.jks";
+        String rutaKeyStoreOrigen = "C:\\Users\\Eric\\Desktop\\DAM\\M9\\UF1\\Practica1u6\\src\\SSL\\origen.jks";
+        Desti desti = new Desti();
+        Origen origen = new Origen();
+        
     }
     
 }
