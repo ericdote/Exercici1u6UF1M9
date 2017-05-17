@@ -8,40 +8,82 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
- *
+ * No comento aqui ya que es igual que el Origen, con la diferencia de que aqui validamos y desciframos.
  * @author Eric
  */
 public class Desti {
-    
-    private byte[] missatgeXifrat;
-    private Key kPrivada;
-    
+
+    private PrivateKey kPrivada;
+    private X509Certificate cert;
+    private KeyStore kStore;
+ 
     public KeyStore loadKeyStore(String ksFile, String ksPwd) throws Exception {
-        KeyStore ks = KeyStore.getInstance("JCEKS"); // JCEKS ó JKS
+        kStore = KeyStore.getInstance("JCEKS"); // JCEKS ó JKS
         File f = new File(ksFile);
-        if (f.isFile()) {            
+        if (f.isFile()) {
             FileInputStream in = new FileInputStream(f);
-            ks.load(in, ksPwd.toCharArray());
+            kStore.load(in, ksPwd.toCharArray());
         }
-        return ks;
+        return kStore;
     }
-    
-    public Key obtindreClauPrivada(String alias, String password){
+
+    public Key obtindreClauPrivada(String alias, String password) {
         try {
-            kPrivada = loadKeyStore(alias, password).getKey(alias, password.toCharArray());
+            kPrivada = (PrivateKey) loadKeyStore(alias, password).getKey(alias, password.toCharArray());
         } catch (Exception ex) {
             Logger.getLogger(Desti.class.getName()).log(Level.SEVERE, null, ex);
         }
         return kPrivada;
     }
-    
-   
+
+    public void obtindreCertificat(String alias) {
+        try {
+            cert = (X509Certificate) kStore.getCertificate(alias);
+        } catch (KeyStoreException ex) {
+            Logger.getLogger(Desti.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public boolean validarSignatura(byte[] missatgeXifrat, byte[] signature) {
+        boolean isValid = false;
+        try {
+            Signature signer = Signature.getInstance("SHA256withRSA");
+            signer.initVerify(cert.getPublicKey());
+            signer.update(missatgeXifrat);
+            isValid = signer.verify(signature);
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException ex) {
+            Logger.getLogger(Desti.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return isValid;
+    }
+
+    public byte[] desxifraDadesReceptor(byte[] missatgeXifrat) {
+        byte[] missatge = null;
+        try {
+            Cipher ci = Cipher.getInstance("RSA/ECB/PKCS1Padding", "SunJCE");
+            ci.init(Cipher.DECRYPT_MODE, kPrivada);
+            missatge = ci.doFinal(missatgeXifrat);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException ex) {
+            Logger.getLogger(Desti.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return missatge;
+    }
 }
+
+
