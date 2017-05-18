@@ -1,9 +1,5 @@
 package practica1u6;
 
-import java.io.File;
-import java.security.PrivateKey;
-import java.util.Arrays;
-
 /**
  *
  * @author Eric
