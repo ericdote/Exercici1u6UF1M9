@@ -24,7 +24,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 /**
- * No comento aqui ya que es igual que el Origen, con la diferencia de que aqui validamos y desciframos.
+ * No comento aqui ya que es igual que el Origen, con la diferencia de que aqui
+ * validamos y desciframos.
+ *
  * @author Eric
  */
 public class Desti {
@@ -32,7 +34,7 @@ public class Desti {
     private PrivateKey kPrivada;
     private X509Certificate cert;
     private KeyStore kStore;
- 
+
     public KeyStore loadKeyStore(String ksFile, String ksPwd) throws Exception {
         kStore = KeyStore.getInstance("JCEKS"); // JCEKS ó JKS
         File f = new File(ksFile);
@@ -45,7 +47,7 @@ public class Desti {
 
     public Key obtindreClauPrivada(String alias, String password) {
         try {
-            kPrivada = (PrivateKey) loadKeyStore(alias, password).getKey(alias, password.toCharArray());
+            kPrivada = (PrivateKey) kStore.getKey(alias, password.toCharArray());
         } catch (Exception ex) {
             Logger.getLogger(Desti.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -85,5 +87,3 @@ public class Desti {
         return missatge;
     }
 }
-
-

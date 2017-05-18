@@ -13,6 +13,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -57,7 +58,7 @@ public class Origen {
      */
     public Key obtindreClauPrivada(String alias, String password) {
         try {
-            kPrivada = (PrivateKey) loadKeyStore(alias, password).getKey(alias, password.toCharArray());
+            kPrivada = (PrivateKey) kStore.getKey(alias, password.toCharArray());
         } catch (Exception ex) {
             Logger.getLogger(Origen.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -94,10 +95,12 @@ public class Origen {
         }
         return buffer;
     }
+
     /**
      * Metode que signa el missatge xifrat
+     *
      * @param missatgeXifrat
-     * @return 
+     * @return
      */
     public byte[] signar(byte[] missatgeXifrat) {
         byte[] sign = null;
